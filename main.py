@@ -3,19 +3,19 @@ from dotenv import load_dotenv
 from scraper import fetch_website_contents
 from openai import OpenAI
 
-# Ortam değişkenlerini yükle (.env varsa API anahtarını çeker)
+# Load environment variables (fetches API key from .env file if present)
 load_dotenv(override=True)
 
 # ----------------------------------------------------
-# 1. SAĞLAYICI AYARI (Gemini veya Ollama)
+# 1. PROVIDER CONFIGURATION (Gemini vs. Ollama)
 # ----------------------------------------------------
-# Varsayılan olarak Gemini ayarlı; Ollama kullanmak istersen OLLAMA_BASE_URL'i açabilirsin
+# USE_OLLAMA acts as a toggle. Set to True for local execution, False for cloud.
 USE_OLLAMA = True
 
 if USE_OLLAMA:
     gemini_client = OpenAI(
         base_url="http://localhost:11434/v1",
-        api_key="ollama"  # Yerel model şifre istemez
+        api_key="ollama"  # Local models do not require a valid API key
     )
     MODEL_NAME = "llama3.2"
 else:
@@ -26,7 +26,7 @@ else:
     MODEL_NAME = "models/gemini-3.7-flash"
 
 # ----------------------------------------------------
-# 2. PROMPT VE ŞABLONLAR
+# 2. PROMPT ENGINEERING & TEMPLATES
 # ----------------------------------------------------
 SYSTEM_PROMPT = """
 Sen bir yazılım uzmanısın ve web sitelerini tararken özetler veriyorsun.
@@ -43,7 +43,7 @@ def messages_for(website_content):
     ]
 
 # ----------------------------------------------------
-# 3. ÖZETLEME FONKSİYONU
+# 3. CORE SUMMARIZATION FUNCTION
 # ----------------------------------------------------
 def summarize(url):
     print(f"[{MODEL_NAME}] ile web sitesi taranıyor: {url}...")
